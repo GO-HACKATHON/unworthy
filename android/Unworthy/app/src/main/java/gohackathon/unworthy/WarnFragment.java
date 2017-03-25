@@ -26,10 +26,6 @@ public class WarnFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         currWebView = inflater.inflate(R.layout.fragment_warn, container, false);
-        WebView img = (WebView) currWebView.findViewById(R.id.imgWarn);
-        img.loadUrl("file:///android_asset/imgWarn.html");
-        img.setVerticalScrollBarEnabled(false);
-        img.setHorizontalScrollBarEnabled(false);
         return currWebView;
     }
 

@@ -29,7 +29,7 @@
                 android:id="@+id/fragment"
                 android:name="gohackathon.unworthy.WarnFragment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 android:layout_weight="1" />
 
             <fragment
@@ -46,7 +46,7 @@
         android:id="@+id/constraintLayout"
         android:layout_width="0dp"
         android:layout_height="15dp"
-        android:background="#000"
+        android:background="#fff"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -61,7 +61,7 @@
             android:layout_marginRight="8dp"
             android:autoText="true"
             android:text="..."
-            android:textColor="@android:color/white"
+            android:textColor="#000"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
