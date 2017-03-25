@@ -6,6 +6,22 @@
  * Time: 4:02 PM
  */
 
+function distance($lat1, $lon1, $lat2, $lon2, $unit = "K"){
+    $theta = $lon1 - $lon2;
+    $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+    $dist = acos($dist);
+    $dist = rad2deg($dist);
+    $miles = $dist * 60 * 1.1515;
+    $unit = strtoupper($unit);
+    if ($unit == "K") {
+        return ($miles * 1.609344)*1000;
+    } else if ($unit == "N") {
+        return ($miles * 0.8684);
+    } else {
+        return $miles;
+    }
+}
+
 // LINE/CIRCLE
 function lineCircle($x1, $y1, $x2, $y2, $cx, $cy, $r = 0.00005) {
     if($cx < $x1 && $cx < $x2) return false;
@@ -46,8 +62,6 @@ function lineCircle($x1, $y1, $x2, $y2, $cx, $cy, $r = 0.00005) {
     }
     return false;
 }
-
-
 function linePoint($x1, $y1, $x2, $y2, $px, $py) {
 
     $d1 = dist($px,$py, $x1,$y1);
@@ -62,7 +76,6 @@ function linePoint($x1, $y1, $x2, $y2, $px, $py) {
     }
     return false;
 }
-
 function pointCircle($px, $py, $cx, $cy, $r) {
 
     $distX = $px - $cx;
@@ -74,8 +87,6 @@ function pointCircle($px, $py, $cx, $cy, $r) {
     }
     return false;
 }
-
-
 function dist($x1,$y1,$x2,$y2){
     $distX = $x1 - $x2;
     $distY = $y1 - $y2;

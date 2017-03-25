@@ -3,14 +3,13 @@
  * Created by PhpStorm.
  * User: Andi Muqsith Ashari
  * Date: 3/25/2017
- * Time: 4:09 PM
+ * Time: 6:29 PM
  */
-
 
 include "config.php";
 include "helpers/lineCircle.php";
 
-$eventList = file_get_contents("https://mars.aashari.id/api/get-events.php");
+$eventList = file_get_contents("https://mars.aashari.id/api/get-events.json");
 $eventList = json_decode($eventList);
 
 $response = [];
@@ -38,28 +37,11 @@ while ($graph = $graphList->fetch_assoc()) {
                 }
             }
         }
+        $relation['distance'] = distance($graph['location_x'], $graph['location_y'], $relation['location_x'], $relation['location_y']);
         $relation['events'] = $pathEvent;
         $graph['relation'][] = $relation;
     }
     $response[] = $graph;
 }
 
-header('Content-Type: application/json');
 echo json_encode($response);
-
-function distance($lat1, $lon1, $lat2, $lon2, $unit = "K")
-{
-    $theta = $lon1 - $lon2;
-    $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
-    $dist = acos($dist);
-    $dist = rad2deg($dist);
-    $miles = $dist * 60 * 1.1515;
-    $unit = strtoupper($unit);
-    if ($unit == "K") {
-        return ($miles * 1.609344);
-    } else if ($unit == "N") {
-        return ($miles * 0.8684);
-    } else {
-        return $miles;
-    }
-}
