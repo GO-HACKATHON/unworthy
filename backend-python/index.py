@@ -126,10 +126,10 @@ def route():
     routes = []
     for path in paths:
         d = get_traffic_data(path)
-        traffic_data.append(d)
+        traffic_data.append({'longitude': d['location_y'], 'latitude': d['location_x']})
         # routes.append({d['location_x'],d['location_y']})
     # for path in paths:
-    return jsonify({"routes_data": traffic_data})
+    return jsonify({"routes_data": traffic_data, "status": 200})
 
 
 @app.route('/', methods=['GET', 'POST'])
