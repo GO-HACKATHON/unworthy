@@ -5,18 +5,13 @@
  * Date: 3/25/2017
  * Time: 11:32 AM
  */
-/*
+
 include "config.php";
 
 $parentId = $mysqli->real_escape_string($_GET['parent_id']);
 
 $parent = $mysqli->query("SELECT * FROM map_point WHERE id='" . $parentId . "' LIMIT 1");
 $parent = $parent->fetch_assoc();
-
-$eventData = "https://mars.aashari.id/api/get-events.php?location_x=" . $parent['location_x'] . "&location_y=" . $parent['location_y'];
-$eventData = file_get_contents($eventData);
-$eventData = json_decode($eventData);
-
 $parent['relation'] = visitChild($mysqli, $parent);
 
 header('Content-Type: application/json');
@@ -37,7 +32,7 @@ function visitChild($mysqli, $parent, $visitedPoint = [])
     return $relationList;
 }
 
-*/
+
 function isCollide($lx1, $ly1, $lx2, $ly2, $x0, $y0){
       $A1 = $ly2 - $ly1;
       $B1 = $lx1 - $lx2;
