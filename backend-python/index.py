@@ -4,6 +4,9 @@ from pprint import pprint
 import heapq
 import sys
 import pickle
+from math import radians, cos, sin, asin, sqrt
+
+from flask import request
 
 
 class Graph:
@@ -84,10 +87,41 @@ def get_traffic_data(id):
     pass
 
 
-@app.route('/routes/<longitude>/<latitude>')
-def route(longitude, latitude):
+def haversine(lon1, lat1, lon2, lat2):
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    km = 6367 * c
+    return km
+
+
+def find_shortest(lon, lat, map_data):
+    shortest_distance = sys.maxsize
+    shortest_node_id = None
+
+    for node in map_data:
+        distance = haversine(float(lon), float(lat), float(node["location_y"]), float(node["location_x"]))
+        if distance < shortest_distance:
+            shortest_distance = distance
+            shortest_node_id = node["id"]
+    return shortest_node_id
+
+
+@app.route('/routes')
+def route():
     graph = pickle.load(open("graph.pickle", "rb"))
-    paths = graph.get_path(longitude, latitude)
+    map_data = pickle.load(open("map_data.pickle", "rb"))
+    lon1 = request.args.get('lon1')
+    lat1 = request.args.get('lat1')
+    lon2 = request.args.get('lon2')
+    lat2 = request.args.get('lat2')
+
+    from_id = find_shortest(lon1, lat1, map_data)
+    to_id = find_shortest(lon2, lat2, map_data)
+
+    paths = graph.get_path(from_id, to_id)
     traffic_data = []
     routes = []
     for path in paths:
