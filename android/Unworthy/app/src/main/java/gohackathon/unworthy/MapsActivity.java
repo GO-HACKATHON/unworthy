@@ -11,6 +11,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -43,6 +44,19 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.*;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
+
+import gohackathon.unworthy.rest_api.ApiClient;
+import gohackathon.unworthy.rest_api.model.Routes;
+import gohackathon.unworthy.rest_api.services.RoutesService;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, SensorEventListener{
 
     private GoogleMap mMap;
@@ -53,6 +67,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double mBearing;
     private SensorManager sensorManager;
     private Sensor rotationVector;
+    public static Routes routes = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +82,56 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onPlaceSelected(Place place) {
                 mMap.clear();
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(place.getAddress().toString()));
+                //mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                //mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(place.getAddress().toString()));
                 Location currLocation = getCurrentLocation();
                 LatLng newLatLng = new LatLng(currLocation.getLatitude(),currLocation.getLongitude());
-                mMap.addPolyline(new PolylineOptions().add(newLatLng,place.getLatLng()).color(Color.RED));
+                //mMap.addPolyline(new PolylineOptions().add(newLatLng,place.getLatLng()).color(Color.RED));
+                ApiClient.getInstance().init();
+//                ApiClient.getInstance().getRoutesService().getRoutes(-6.202383,106.779548,-6.202383,106.779548,
+//                        Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID)).enqueue(new Callback<Routes>() {
+//                    @Override
+//                    public void onResponse(Call<Routes> call, Response<Routes> response) {
+//                        Log.v("StringDebug","data: "+response.body().getRoutesData().size());
+//                        Routes routesData = response.body();
+//                        ArrayList<LatLng> latLang = new ArrayList<LatLng>();
+//                        for(int i = 0 ; i < routesData.getRoutesData().size(); i++){
+//                            Double lat = Double.parseDouble(routesData.getRoutesData().get(i).getLatitude());
+//                            Double lang = Double.parseDouble(routesData.getRoutesData().get(i).getLongitude());
+//                            latLang.add(new LatLng(lat,lang));
+//                        }
+//                        mMap.addPolyline(new PolylineOptions().addAll(latLang));
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<Routes> call, Throwable t) {
+//
+//                    }
+//                });
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl("http://10.17.10.77/")
+                        .client(getOkHttpClient())
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                RoutesService service = retrofit.create(RoutesService.class);
+                Call<Routes> call = service.getRoutes(-6.202383,106.779548,-6.202383,106.779548, Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+                call.enqueue(new Callback<Routes>() {
+                    @Override
+                    public void onResponse(Call<Routes> call, Response<Routes> response) {
+                        routes = response.body();
+                        Log.v("StringDebug","data: "+response.body().getRoutesData().size());
+                        Log.v("StringDebug","data: "+response.body().getStatus());
+                        Log.v("StringDebug","data: "+response.body().getRoutesData().isEmpty());
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Routes> call, Throwable t) {
+
+                    }
+                });
             }
 
             @Override
@@ -82,6 +142,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         FABTrace = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         rotationVector = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+
+    }
+
+    private static OkHttpClient getOkHttpClient(){
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.NONE);
+        OkHttpClient okClient = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
+        return okClient;
     }
 
     private void initWindow() {
@@ -161,8 +231,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Add a marker in Sydney and move the camera
         if(currLocation!=null){
             Log.v("StringDebug","containLocation");
-            LatLng newLocation = new LatLng(currLocation.getLatitude(), currLocation.getLongitude());
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(newLocation));
+
+            CameraPosition cameraPosition = new CameraPosition.Builder().
+                    target(new LatLng(getCurrentLocation().getLatitude(),getCurrentLocation().getLongitude())).
+                    zoom(15).
+                    build();
+
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
 
@@ -217,14 +292,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        Log.v("StringDebug","Sensor Rotate");
+        //Log.v("StringDebug","Sensor Rotate");
         if(sensorEvent.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR && mDeclination!=null){
             float[] mRotationMatrix = new float[16];
             SensorManager.getRotationMatrixFromVector(mRotationMatrix,sensorEvent.values);
             float[] orientation =  new float[3];
             SensorManager.getOrientation(mRotationMatrix,orientation);
             mBearing = Math.toDegrees(orientation[0]) + mDeclination;
+
         }
+        if(routes != null)
+            Log.v("StringDebug","Routes Size : " + routes.getRoutesData().size());
     }
 
     @Override
