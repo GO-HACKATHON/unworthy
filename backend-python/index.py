@@ -113,7 +113,7 @@ def do_refresh():
 
 def refresh():
     graph = Graph()
-    r = requests.get('https://mars.aashari.id/api/get-map-list.json')
+    r = requests.get('https://mars.aashari.id/api/get-map.json')
     request_data = r.json()
     # pprint(request_data)
 
