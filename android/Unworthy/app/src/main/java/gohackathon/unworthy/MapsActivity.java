@@ -5,9 +5,15 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.hardware.GeomagneticField;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -24,10 +30,12 @@ import com.google.android.gms.location.places.PlaceDetectionApi;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -35,11 +43,16 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.*;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, SensorEventListener{
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private PlaceAutocompleteFragment auFragment;
+    private FloatingActionButton FABTrace;
+    private Float mDeclination;
+    private double mBearing;
+    private SensorManager sensorManager;
+    private Sensor rotationVector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +79,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
+        FABTrace = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        rotationVector = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
     }
 
     private void initWindow() {
@@ -104,6 +120,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         mMap.getUiSettings().setCompassEnabled(false);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.v("StringDebug","CheckResume");
+        sensorManager.registerListener(this,rotationVector,SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    public void startTrace(View v){
+        FABTrace.setVisibility(View.INVISIBLE);
+        onLocationChanged(getCurrentLocation());
+    }
+
+    private void moveCamOnRoute(){
+        CameraPosition cameraPosition = new CameraPosition.Builder().
+                target(new LatLng(getCurrentLocation().getLatitude(),getCurrentLocation().getLongitude())).
+                tilt(90).
+                zoom(17).
+                bearing((float) mBearing).
+                build();
+
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     private Location getCurrentLocation(){
@@ -159,4 +198,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    @Override
+    public void onLocationChanged(Location location) {
+        GeomagneticField field = new GeomagneticField(
+                (float)location.getLatitude(),
+                (float)location.getLongitude(),
+                (float)location.getAltitude(),
+                System.currentTimeMillis()
+        );
+        mDeclination =  field.getDeclination();
+        if(FABTrace.getVisibility()==View.INVISIBLE){
+            moveCamOnRoute();
+        }
+        else {
+            setCurrentLocation();
+        }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        Log.v("StringDebug","Sensor Rotate");
+        if(sensorEvent.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR && mDeclination!=null){
+            float[] mRotationMatrix = new float[16];
+            SensorManager.getRotationMatrixFromVector(mRotationMatrix,sensorEvent.values);
+            float[] orientation =  new float[3];
+            SensorManager.getOrientation(mRotationMatrix,orientation);
+            mBearing = Math.toDegrees(orientation[0]) + mDeclination;
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
 }
