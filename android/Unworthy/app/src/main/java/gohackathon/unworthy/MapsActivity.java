@@ -1,6 +1,7 @@
 package gohackathon.unworthy;
 
 import android.Manifest;
+import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -11,6 +12,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -36,7 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
-    private  PlaceAutocompleteFragment auFragment;
+    private PlaceAutocompleteFragment auFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
