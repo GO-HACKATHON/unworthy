@@ -1,7 +1,11 @@
 <?php
 
 // LINE/CIRCLE
-$lineCircle($x1, $y1, $x2, $y2, $cx, $cy, $r) {
+function lineCircle($x1, $y1, $x2, $y2, $cx, $cy, $r) {
+  if($cx < $x1 && $cx < $x2) return false;
+  if($cx > $x1 && $cx > $x2) return false;
+  if($cy < $y1 && $cy < $y2) return false;
+  if($cy > $y1 && $cy > $y2) return false;
 
   // is either end INSIDE the circle?
   // if so, return true immediately
@@ -45,7 +49,7 @@ function linePoint($x1, $y1, $x2, $y2, $px, $py) {
 
   $lineLen = dist($x1,$y1, $x2,$y2);
 
-  $buffer = 0.001;
+  $buffer = 0.00001;
 
   if ($d1+$d2 >= $lineLen-$buffer && $d1+$d2 <= $lineLen+$buffer) {
     return true;
@@ -59,14 +63,26 @@ function pointCircle($px, $py, $cx, $cy, $r) {
   $distY = $py - $cy;
   $distance = sqrt( ($distX*$distX) + ($distY*$distY) );
 
-  if (distance <= r) {
+  if ($distance <= $r) {
     return true;
   }
   return false;
 }
 
 
-echo (lineCircle(-6.183247,106.823646, -6.183198, 106.824720, -6.183235, 106.824170,0.000015));
-echo (lineCircle(-6.183247,106.823646, -6.183198, 106.824720, -6.183158, -106.825275,0.000015));
-echo (lineCircle(-6.183247,106.823646, -6.183198, 106.824720, -6.182539, 106.823121,0.000015));
-echo (lineCircle(-6.183247,106.823646, -6.183198, 106.824720, -6.182539, 106.823351,0.000015));
+function dist($x1,$y1,$x2,$y2){
+  $distX = $x1 - $x2;
+  $distY = $y1 - $y2;
+  $distance = sqrt( ($distX*$distX) + ($distY*$distY) );
+  return $distance;
+}
+
+// echo (lineCircle(-6.183247,106.823646, -6.183198, 106.824720, -6.183235, 106.824170,0.000015));
+// echo (lineCircle(-6.183247,106.823646, -6.183198, 106.824720, -6.183158, -106.825275,0.000015));
+// echo (lineCircle(-6.183247,106.823646, -6.183198, 106.824720, -6.182539, 106.823121,0.000015));
+
+if(lineCircle(-6.183241, 106.823677,-6.183300, 106.823157,-6.183237, 106.823897,0.00005)){
+  echo "TRUE";
+}else {
+  echo "FALSE";
+}

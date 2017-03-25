@@ -1,15 +1,9 @@
+import requests
 from flask import Flask, jsonify
 from pprint import pprint
 import heapq
 import sys
-
-
-class Point:
-    def __init__(self, id, lon, lat, edge):
-        self.id = id
-        self.longitude = lon
-        self.latitude = lat
-        self.edge = edge
+import pickle
 
 
 class Graph:
@@ -79,16 +73,29 @@ class TrafficData:
         }
 
 
-graph = Graph()
-
 app = Flask(__name__)
 
 
-@app.route('/route/<longitude>/<latitude>')
+def get_traffic_data(id):
+    map_data = pickle.load(open("map_data.pickle", "rb"))
+    for data in map_data:
+        if data['id'] == id:
+            return data
+    pass
+
+
+@app.route('/routes/<longitude>/<latitude>')
 def route(longitude, latitude):
-    t = TrafficData()
-    paths = graph.get_path('A', 'G')
-    return jsonify({"data": t.serialize(), "routes": paths})
+    graph = pickle.load(open("graph.pickle", "rb"))
+    paths = graph.get_path(longitude, latitude)
+    traffic_data = []
+    routes = []
+    for path in paths:
+        d = get_traffic_data(path)
+        traffic_data.append(d)
+        # routes.append({d['location_x'],d['location_y']})
+    # for path in paths:
+    return jsonify({"routes_data": traffic_data})
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -97,13 +104,42 @@ def index():
     pass
 
 
+@app.route('/refresh', methods=['GET', 'POST'])
+def do_refresh():
+    refresh()
+    return jsonify({"status": 200})
+    pass
+
+
+def refresh():
+    graph = Graph()
+    r = requests.get('https://mars.aashari.id/api/get-map-list.json')
+    request_data = r.json()
+    # pprint(request_data)
+
+    for data in request_data:
+        edge = {}
+        for relation in data['relation']:
+            cost = relation['distance']
+            for event in relation['events']:
+                cost += master_cost[event['type']]
+            edge[relation['id']] = cost
+        graph.add_point(data['id'], edge)
+
+    pickle.dump(graph, open("graph.pickle", "wb"))
+    pickle.dump(request_data, open("map_data.pickle", "wb"))
+    pass
+
+
+master_cost = {'TrafficJam': 100,
+               'Accident': 100,
+               'DamagedRoads': 100,
+               'FallenTrees': 100,
+               'Floods': 100,
+               'RoadClosed': 100,
+               'RoadConstruction': 100
+               }
+
 if __name__ == '__main__':
-    graph.add_point('A', {'B': 7, 'C': 8})
-    graph.add_point('B', {'A': 7, 'F': 2})
-    graph.add_point('C', {'A': 8, 'F': 6, 'G': 4})
-    graph.add_point('D', {'F': 8})
-    graph.add_point('E', {'H': 1})
-    graph.add_point('F', {'B': 2, 'C': 6, 'D': 8, 'G': 9, 'H': 3})
-    graph.add_point('G', {'C': 4, 'F': 9})
-    graph.add_point('H', {'E': 1, 'F': 3})
+    refresh()
     app.run()
