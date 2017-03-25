@@ -1,4 +1,4 @@
-package project.unworthy;
+package gohackathon.unworthy;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

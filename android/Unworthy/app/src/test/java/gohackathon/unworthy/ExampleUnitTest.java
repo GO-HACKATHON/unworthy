@@ -1,4 +1,4 @@
-package project.unworthy;
+package gohackathon.unworthy;
 
 import org.junit.Test;
 
