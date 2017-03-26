@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#338300</color>
-    <color name="colorCloudy">#21d4ff</color>
-    <color name="textColorCloudy">#69cfe6</color>
-</resources>

@@ -123,14 +123,20 @@ def route():
 
     paths = graph.get_path(from_id, to_id)
     traffic_data = []
-    routes = []
+    event = []
+
     for path in paths:
         d = get_traffic_data(path)
+        # pprint(d)
         traffic_data.append({'longitude': d['location_y'], 'latitude': d['location_x']})
-        # routes.append({d['location_x'],d['location_y']})
-    # for path in paths:
-    return jsonify({"routes_data": traffic_data, "status": 200})
+        for rel in d['relation']:
+            pprint(rel)
+            for ev in rel['events']:
+                event.append({"type": ev['type'],"location" : ev['first_location']})
 
+    w = requests.get('https://mars.aashari.id/api/get-weather.json')
+
+    return jsonify({"routes_data": traffic_data,"event": event,"weather": w.json(), "status": 200})
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
