@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="57e2af6b-00ba-49b0-b05b-8bc5f9cd9822" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/backend-php/get-map.php" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/backend-php/get-graph-list.php" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/backend-php/get-graph.php" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backend-php/helpers/lineCircle.php" afterPath="$PROJECT_DIR$/backend-php/helpers/lineCircle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/backend-php/get-map.php" afterPath="$PROJECT_DIR$/backend-php/get-map.php" />
     </list>
     <ignored path="unworthy.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -30,7 +27,7 @@
       <file leaf-file-name="lineCircle.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/backend-php/helpers/lineCircle.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1598">
+            <state relative-caret-position="1445">
               <caret line="94" column="1" selection-start-line="94" selection-start-column="1" selection-end-line="94" selection-end-column="1" />
               <folding>
                 <element signature="e#6#102#0#PHP" expanded="true" />
@@ -42,12 +39,13 @@
       <file leaf-file-name="get-map.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backend-php/get-map.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="30" column="21" selection-start-line="30" selection-start-column="21" selection-end-line="30" selection-end-column="21" />
+            <state relative-caret-position="372">
+              <caret line="53" column="43" selection-start-line="53" selection-start-column="43" selection-end-line="53" selection-end-column="43" />
               <folding>
                 <element signature="e#6#102#0#PHP" expanded="true" />
-                <marker date="1490441538825" expanded="true" signature="325:368" ph="SELECT * FRO... map_point" />
-                <marker date="1490441538825" expanded="true" signature="482:647" ph="SELECT mp2.*... map_vector" />
+                <marker date="1490494637839" expanded="true" signature="335:376" ph="SELECT * FRO... tracker" />
+                <marker date="1490494637839" expanded="true" signature="521:564" ph="SELECT * FRO... map_point" />
+                <marker date="1490494637839" expanded="true" signature="678:843" ph="SELECT mp2.*... map_vector" />
               </folding>
             </state>
           </provider>
@@ -243,12 +241,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1490414350468</updated>
-      <workItem from="1490414353907" duration="22091000" />
+      <workItem from="1490414353907" duration="31315000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22091000" />
+    <option name="totallyTimeSpent" value="31315000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
@@ -397,7 +395,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backend-php/helpers/lineCircle.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1598">
+        <state relative-caret-position="1445">
           <caret line="94" column="1" selection-start-line="94" selection-start-column="1" selection-end-line="94" selection-end-column="1" />
           <folding>
             <element signature="e#6#102#0#PHP" expanded="true" />
@@ -407,12 +405,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backend-php/get-map.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="30" column="21" selection-start-line="30" selection-start-column="21" selection-end-line="30" selection-end-column="21" />
+        <state relative-caret-position="372">
+          <caret line="53" column="43" selection-start-line="53" selection-start-column="43" selection-end-line="53" selection-end-column="43" />
           <folding>
             <element signature="e#6#102#0#PHP" expanded="true" />
-            <marker date="1490441538825" expanded="true" signature="325:368" ph="SELECT * FRO... map_point" />
-            <marker date="1490441538825" expanded="true" signature="482:647" ph="SELECT mp2.*... map_vector" />
+            <marker date="1490494637839" expanded="true" signature="335:376" ph="SELECT * FRO... tracker" />
+            <marker date="1490494637839" expanded="true" signature="521:564" ph="SELECT * FRO... map_point" />
+            <marker date="1490494637839" expanded="true" signature="678:843" ph="SELECT mp2.*... map_vector" />
           </folding>
         </state>
       </provider>
